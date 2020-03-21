@@ -68,9 +68,8 @@ public class TilemapInfo : MonoBehaviour, ILoadableScript
                 Vector3Int tilePosition = new Vector3Int(r, c, 0);
                 tilemap.SetTile(tilePosition, tiles.BaseTile);
 
-                int x = r - bottomCorner.x;
-                int y = c - bottomCorner.y;
-                tileSpriteInteractions[x, y] = new TileSpriteInteraction(tilePosition);
+                Vector2Int tileSpriteIdx = TileSpriteIdxFromTilePosition(tilePosition);
+                tileSpriteInteractions[tileSpriteIdx.x, tileSpriteIdx.y] = new TileSpriteInteraction(tilePosition);
             }
         }
     }
@@ -106,6 +105,13 @@ public class TilemapInfo : MonoBehaviour, ILoadableScript
     }
 
     #region TileSpriteInteractions
+    Vector2Int TileSpriteIdxFromTilePosition(Vector3Int tilePosition) {
+        Vector3Int bottomCorner = GetBottomCorner();
+        int x = tilePosition.x - bottomCorner.x;
+        int y = tilePosition.y - bottomCorner.y;
+        return new Vector2Int(x, y);
+    }
+
     public void AddNewSpriteAtTilePosition(Sprite newSprite, Vector3Int tilePosition) {
         if (spriteToTileInteraction.ContainsKey(newSprite)) {
             SpriteAlreadyExists(newSprite);
@@ -134,7 +140,8 @@ public class TilemapInfo : MonoBehaviour, ILoadableScript
     }
 
     TileSpriteInteraction GetTileSpriteInteractionAtTilePosition(Vector3Int tilePosition) {
-        return tileSpriteInteractions[tilePosition.x, tilePosition.y];
+        Vector2Int tileSpriteIdx = TileSpriteIdxFromTilePosition(tilePosition);
+        return tileSpriteInteractions[tileSpriteIdx.x, tileSpriteIdx.y];
     }
 
     public Vector3Int GetTilePositionOfSprite(Sprite sprite) {

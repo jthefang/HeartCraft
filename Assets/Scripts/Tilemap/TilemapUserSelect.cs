@@ -84,9 +84,11 @@ public class TilemapUserSelect : MonoBehaviour
 
     void DisplayInfoForTileUnderMouse() {
         Vector3Int tilePositionUnderMouse = GetTilePositionUnderMouse();
-        List<Sprite> spritesAtTilePosition = tilemapInfo.GetSpritesAtTilePosition(tilePositionUnderMouse);
-        foreach (Sprite s in spritesAtTilePosition) {
-            Debug.Log(s);
+        if (ExistsTileAt(tilePositionUnderMouse)) {
+            List<Sprite> spritesAtTilePosition = tilemapInfo.GetSpritesAtTilePosition(tilePositionUnderMouse);
+            foreach (Sprite s in spritesAtTilePosition) {
+                Debug.Log(s);
+            }
         }
     }
 
