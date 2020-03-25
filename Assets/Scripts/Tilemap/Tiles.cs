@@ -49,5 +49,8 @@ public class Tiles : MonoBehaviour
             return _baseTile;
         }
     }
+
+    [SerializeField]
+    Sprite _towerSprite;
     #endregion
 }

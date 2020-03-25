@@ -35,7 +35,7 @@ public interface ILoadableScript {
     }
     */
 
-    /**
+    /*******************
         In corresponding IDependentScript
         public class PlayerController2D : MonoBehaviour, IDependentScript {
             bool propulsionLoaded;

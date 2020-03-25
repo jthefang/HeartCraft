@@ -31,7 +31,7 @@ class PrevHighlightedTile {
     }
 }
 
-public class TilemapUserSelect : MonoBehaviour
+public class HighlightTilesOnHover : MonoBehaviour
 {
     Grid grid;
     Tilemap tilemap;
@@ -44,10 +44,10 @@ public class TilemapUserSelect : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        tilemap = GetComponent<Tilemap>();
         tilemapInfo = TilemapInfo.Instance;
+        tilemap = tilemapInfo.GetTilemap();
+        grid = tilemapInfo.GetGrid();
         tiles = Tiles.Instance;
-        grid = tilemap.layoutGrid;
 
         prevHighlightedTile = new PrevHighlightedTile();
         int numDirections = GetDirections().Length;
@@ -61,40 +61,19 @@ public class TilemapUserSelect : MonoBehaviour
     void Update()
     {
         HighlightTileUnderMouse();
-        if (Input.GetMouseButtonDown(0)) {
-            DisplayInfoForTileUnderMouse();
-        }
     }
 
     Direction[] GetDirections() {
         return (Direction[]) Enum.GetValues(typeof(Direction));;
     }
 
-    bool ExistsTileAt(Vector3Int tilePosition) {
-        return tilemap.GetTile(tilePosition) != null;
-    }
-
-    Vector3Int GetTilePositionUnderMouse() {
-        Vector3 mouseCoords = Camera.main.ScreenToWorldPoint(Input.mousePosition); 
-        mouseCoords.y -= tiles.TileBlockHeightOffset;
-        Vector3Int tilePositionUnderMouse = grid.LocalToCell(mouseCoords); 
-        tilePositionUnderMouse.z = 0;
-        return tilePositionUnderMouse;
-    }
-
-    void DisplayInfoForTileUnderMouse() {
-        Vector3Int tilePositionUnderMouse = GetTilePositionUnderMouse();
-        if (ExistsTileAt(tilePositionUnderMouse)) {
-            List<Sprite> spritesAtTilePosition = tilemapInfo.GetSpritesAtTilePosition(tilePositionUnderMouse);
-            foreach (Sprite s in spritesAtTilePosition) {
-                Debug.Log(s);
-            }
-        }
-    }
-
     #region HighlightOnHover
+    bool ExistsUnhighlightedTileAt(Vector3Int tilePosition) {
+        return tilemapInfo.ExistsBaseTileAt(tilePosition);
+    }
+
     void HighlightTileUnderMouse() {
-        Vector3Int hoverTilePos = GetTilePositionUnderMouse();
+        Vector3Int hoverTilePos = tilemapInfo.GetTilePositionUnderMouse();
 
         if (prevHighlightedTile.hasActiveHighlight && !prevHighlightedTile.MatchesPosition(hoverTilePos)) {
             DehighlightPrevTile();
@@ -141,11 +120,6 @@ public class TilemapUserSelect : MonoBehaviour
             default:
                 return neighborPos;
         }
-    }
-
-    bool ExistsUnhighlightedTileAt(Vector3Int tilePosition) {
-        TileBase tileAtPosition = tilemap.GetTile(tilePosition);
-        return tileAtPosition != null && tileAtPosition.Equals(tiles.BaseTile);
     }
 
     void DehighlightPrevTile() {

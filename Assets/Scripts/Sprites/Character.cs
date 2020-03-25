@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/**
+    A character is a sprite the player can control
+*/
 public class Character : Sprite
 {   
     protected override void Init() {
@@ -12,5 +15,9 @@ public class Character : Sprite
     void Update()
     {
         
+    }
+
+    public override bool IsCharacter() {
+        return true;
     }
 }

@@ -34,6 +34,7 @@ public class TilemapInfo : MonoBehaviour, ILoadableScript
 
     Tilemap tilemap;
     Tiles tiles;
+    Grid grid;
     TileSpriteInteraction[,] tileSpriteInteractions;
     Dictionary<Sprite, TileSpriteInteraction> spriteToTileInteraction;
     [SerializeField]
@@ -42,7 +43,8 @@ public class TilemapInfo : MonoBehaviour, ILoadableScript
     // Start is called before the first frame update
     void Start()
     {
-        tilemap = GetComponent<Tilemap>();
+        tilemap = GetTilemap();
+        grid = GetGrid();
         tiles = Tiles.Instance;
 
         InitializeTilemap();
@@ -76,7 +78,11 @@ public class TilemapInfo : MonoBehaviour, ILoadableScript
 
     #region Basic info
     public Grid GetGrid() {
-        return this.GetComponent<Tilemap>().layoutGrid;
+        return GetTilemap().layoutGrid;
+    }
+
+    public Tilemap GetTilemap() {
+        return GetComponent<Tilemap>();
     }
 
     public float GetSpriteOffsetAboveTile() {
@@ -89,10 +95,35 @@ public class TilemapInfo : MonoBehaviour, ILoadableScript
         return new Vector3Int(-maxX, -maxY, 0);
     }
 
+    public Vector3Int GetCenter(){
+        return new Vector3Int(0, 0, 0);
+    }
+
     public Vector3Int GetTopCorner() {
         int maxX = (int) mapDimensions.x / 2;
         int maxY = (int) mapDimensions.y / 2;
+        bool isOdd = mapDimensions.x % 2 == 1;
+        if (isOdd) {
+            return new Vector3Int(maxX, maxY, 0);
+        }
         return new Vector3Int(maxX-1, maxY-1, 0);
+    }
+    
+    public bool ExistsTileAt(Vector3Int tilePosition) {
+        return tilemap.GetTile(tilePosition) != null;
+    }
+
+    public bool ExistsBaseTileAt(Vector3Int tilePosition) {
+        TileBase tileAtPosition = tilemap.GetTile(tilePosition);
+        return tileAtPosition != null && tileAtPosition.Equals(tiles.BaseTile);
+    }
+    
+    public Vector3Int GetTilePositionUnderMouse() {
+        Vector3 mouseCoords = Camera.main.ScreenToWorldPoint(Input.mousePosition); 
+        mouseCoords.y -= tiles.TileBlockHeightOffset;
+        Vector3Int tilePositionUnderMouse = grid.LocalToCell(mouseCoords); 
+        tilePositionUnderMouse.z = 0;
+        return tilePositionUnderMouse;
     }
     #endregion
 
@@ -118,7 +149,7 @@ public class TilemapInfo : MonoBehaviour, ILoadableScript
             return;
         }
 
-        TileSpriteInteraction newTile = tileSpriteInteractions[tilePosition.x, tilePosition.y];
+        TileSpriteInteraction newTile = GetTileSpriteInteractionAtTilePosition(tilePosition);
         spriteToTileInteraction[newSprite] = newTile;
         newTile.AddSprite(newSprite);
     }
