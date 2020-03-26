@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6637299908994179412}
   - component: {fileID: -4273918196337391283}
   - component: {fileID: -2972847638834790229}
+  - component: {fileID: -7373567537534907388}
   m_Layer: 0
   m_Name: Doggo
   m_TagString: Untagged
@@ -107,3 +108,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f8403af3fc2d4e66926e701f8150f52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-7373567537534907388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6637299908994179435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 981b19a4ec2c54307a4ba92ba427cdf4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speedInTilesPerSecond: 0

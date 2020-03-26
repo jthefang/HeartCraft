@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class SelectSpriteOnClick : MonoBehaviour
+public class SelectSpriteOnLeftClick : MonoBehaviour
 {
     #region Singleton
-    public static SelectSpriteOnClick Instance;
+    public static SelectSpriteOnLeftClick Instance;
     void Awake() {
         Instance = this;
     }
@@ -36,6 +36,9 @@ public class SelectSpriteOnClick : MonoBehaviour
     public event Action<Sprite, Sprite> OnNewSpriteSelected;
     public event Action<Sprite> OnSpriteDeselected;
 
+    bool shouldIgnoreLeftClick;
+    int numClicksToIgnore;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -47,18 +50,35 @@ public class SelectSpriteOnClick : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (numClicksToIgnore <= 0) {
+            shouldIgnoreLeftClick = false;
+        }
+
         if (Input.GetMouseButtonDown(0)) {
-            List<Sprite> spritesUnderMouse = GetSpritesOnTileUnderMouse();
-            SelectSprites(spritesUnderMouse);
+            if (shouldIgnoreLeftClick) {
+                numClicksToIgnore -= 1;
+            } else {
+                List<Sprite> spritesUnderMouse = GetSpritesOnTileUnderMouse();
+                SelectASpriteFrom(spritesUnderMouse);
+            }
         }
     }
 
     void OnSpriteDeselectedHandler(Sprite prevSprite) {
         SpriteInfoPanel.Instance.ResetDisplay();
+        prevSprite.OnDeselected();
     }
 
     void OnNewSpriteSelectedHandler(Sprite prevSprite, Sprite newSprite) {
         SpriteInfoPanel.Instance.DisplaySpriteInfo(newSprite);
+        if (prevSprite != null)
+            prevSprite.OnDeselected();
+        newSprite.OnSelected();
+    }
+
+    public void IgnoreLeftClickForNClicks(int n) {
+        shouldIgnoreLeftClick = true;
+        numClicksToIgnore = n;
     }
 
     public Sprite GetCurrSelectedSprite() {
@@ -72,22 +92,25 @@ public class SelectSpriteOnClick : MonoBehaviour
         return CurrSelectedSprite.IsCharacter();
     }
 
-    public Character GetCurrSelectedCharacter() {
-        return CurrSelectedSprite.GetComponent<Character>();
-    }
-
-    void SelectSprites(List<Sprite> sprites) {
+    void SelectASpriteFrom(List<Sprite> sprites) {
         /**
             Right now we assume there can only be one sprite at each tile
                 => this list should only have one sprite
                 => we only "select" one sprite 
         */
         if (sprites == null || sprites.Count <= 0) {
-            CurrSelectedSprite = null;
             return;
         }
 
-        CurrSelectedSprite = sprites[0];
+        SelectSprite(sprites[0]);
+    }
+
+    void SelectSprite(Sprite sprite) {
+        CurrSelectedSprite = sprite;
+    }
+
+    void DeselectSprite() {
+        CurrSelectedSprite = null;
     }
 
     List<Sprite> GetSpritesOnTileUnderMouse() {

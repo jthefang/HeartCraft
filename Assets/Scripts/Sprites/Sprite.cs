@@ -9,6 +9,7 @@ public class Sprite : MonoBehaviour, IDependentScript
     protected SpriteMovement spriteMovement;
 
     bool hasSpawnPosition;
+    bool isSelected;
     Vector3Int spawnTilePosition;
 
     // Start is called before the first frame update
@@ -25,6 +26,7 @@ public class Sprite : MonoBehaviour, IDependentScript
         
     }
 
+    #region Initialization
     public void OnAllDependenciesLoaded() {
         Init();
         OnSpriteInitialized();
@@ -49,8 +51,22 @@ public class Sprite : MonoBehaviour, IDependentScript
         tilemapInfo.AddNewSpriteAtTilePosition(this, tilePosition);
         spriteMovement.MoveToTilePosition(tilePosition);
     }
+    #endregion
 
     public virtual bool IsCharacter() {
         return false;
     }
+
+    public bool IsSelected() {
+        return isSelected;
+    }
+
+    public virtual void OnSelected() {
+        isSelected = true;
+    }
+
+    public virtual void OnDeselected() {
+        isSelected = false;
+    }
+
 }

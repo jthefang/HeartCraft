@@ -48,6 +48,19 @@ public class SpriteMovement : MonoBehaviour, ILoadableScript
         MoveToTilePosition(tilemapInfo.GetTopCorner());
     }
 
+    public void MoveToTilePositionUnderMouse() {
+        Vector3Int tilePositionUnderMouse = tilemapInfo.GetTilePositionUnderMouse();
+        if (!tilemapInfo.ExistsTileAt(tilePositionUnderMouse)) {
+            return;
+        }
+
+        bool hasSpritesAtTilePosition = tilemapInfo.GetSpritesAtTilePosition(tilePositionUnderMouse).Count > 0;
+        if (hasSpritesAtTilePosition) {
+            return;
+        }
+        MoveToTilePosition(tilePositionUnderMouse);
+    }
+
     public void MoveToTilePosition(Vector3Int tilePosition) {
         Vector3 newPosition = grid.CellToWorld(tilePosition);
         newPosition.y += tilemapInfo.GetSpriteOffsetAboveTile();
